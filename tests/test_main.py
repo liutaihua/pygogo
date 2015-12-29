@@ -298,3 +298,15 @@ class TestMain(BaseTest):
         lines = sys.stdout.getvalue().strip().split('\n')
         nt.assert_not_equal(*(loads(l)['test'] for l in lines[0:2]))
         nt.assert_not_equal(*(loads(l)['test'] for l in lines[2:4]))
+
+    def test_context(self):
+        extra = {'additional': True}
+        logger1 = gogo.Gogo('basic').get_structured_logger('base2', context=True)
+        logger1.debug('basic', extra=extra)
+
+        formatter = gogo.formatters.structured_formatter
+        logger2 = gogo.Gogo('struct', low_formatter=formatter).logger
+        logger2.debug('struct', extra=extra)
+
+        result = sys.stdout.getvalue().split('\n')[1]
+        nt.assert_not_in('context', result)
